@@ -1,0 +1,235 @@
+@page "/expenses"
+@using FamilyBudgetTracker.Models
+@using FamilyBudgetTracker.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@inject ExpenseService ExpenseService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@* Allow demo viewing when unauthenticated — components use demo-user fallback. *@
+
+<h3>My Expenses</h3>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <input @bind="searchCategory" placeholder="Filter by Category" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <input type="number" @bind="searchYear" placeholder="Filter by Year" class="form-control" />
+    </div>
+    <div class="col-md-5">
+        <button class="btn btn-info" @onclick="SearchExpenses">Search</button>
+        <button class="btn btn-secondary" @onclick="ClearSearch">Clear</button>
+    </div>
+</div>
+
+@if (expenses == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Amount (GH₵)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var expense in expenses)
+            {
+                <tr>
+                    <td>@expense.Date.ToShortDateString()</td>
+                    <td>@expense.Category</td>
+                    <td>@expense.Amount.ToString("N2")</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" @onclick="() => Edit(expense.Id)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Delete(expense.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+
+<h4>@modalTitle Expense</h4>
+
+@if (!string.IsNullOrEmpty(notification))
+{
+    <div class="alert alert-success">@notification</div>
+}
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<EditForm Model="@expense" OnValidSubmit="Save" FormName="expenseForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="date" class="form-label">Date</label>
+        <InputDate id="date" class="form-control" @bind-Value="expense.Date" />
+    </div>
+
+    <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <InputText id="category" class="form-control" @bind-Value="expense.Category" />
+    </div>
+
+    <div class="mb-3">
+        <label for="amount" class="form-label">Amount (GH₵)</label>
+        <InputNumber id="amount" class="form-control" @bind-Value="expense.Amount" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    // Expenses.razor: Allows authenticated users to add, edit, delete and filter their expenses.
+    // Expenses are tied to the logged-in user (Expense.UserId). Ensure the user is authenticated.
+    private List<Expense> expenses = new();
+    private Expense expense = new() { 
+        Category = "", 
+        Amount = 0.01m,
+        Date = DateTime.Now 
+    };
+    private string modalTitle = "Add";
+    private string searchCategory = "";
+    private int? searchYear;
+    private string notification = string.Empty;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Ensure demo data exists for developer/testing
+        await ExpenseService.SeedDemoExpensesAsync();
+        await LoadExpenses();
+    }
+
+    private async Task LoadExpenses()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                // If not authenticated, show demo user data
+                userId = "demo-user-0001";
+            }
+            expenses = await ExpenseService.GetExpensesForUserAsync(userId, searchCategory, searchYear);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Unable to load expenses: " + ex.Message;
+        }
+    }
+
+    private async Task SearchExpenses()
+    {
+        await LoadExpenses();
+    }
+
+    private async Task ClearSearch()
+    {
+        searchCategory = string.Empty;
+        searchYear = null;
+        await LoadExpenses();
+    }
+
+    private void Edit(int id)
+    {
+        modalTitle = "Edit";
+        var existingExpense = expenses.FirstOrDefault(e => e.Id == id);
+        if (existingExpense != null)
+        {
+            expense = new Expense
+            {
+                Id = existingExpense.Id,
+                Date = existingExpense.Date,
+                Category = existingExpense.Category,
+                Amount = existingExpense.Amount,
+                UserId = existingExpense.UserId
+            };
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "demo-user-0001";
+            await ExpenseService.DeleteExpenseForUserAsync(userId, id);
+            await LoadExpenses();
+            notification = "Expense deleted successfully.";
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Unable to delete expense. " + ex.Message;
+            notification = string.Empty;
+        }
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "demo-user-0001";
+            if (expense.Id == 0)
+            {
+                await ExpenseService.AddExpenseForUserAsync(userId, expense);
+                notification = "Expense added successfully!";
+            }
+            else
+            {
+                await ExpenseService.UpdateExpenseForUserAsync(userId, expense);
+                notification = "Expense updated successfully!";
+            }
+            await LoadExpenses();
+            expense = new()
+            {
+                Id = 0,
+                Category = "",
+                Amount = 0.01m,
+                Date = DateTime.Now,
+                UserId = null
+            };
+            modalTitle = "Add";
+            errorMessage = string.Empty;
+            StateHasChanged();
+            await Task.Delay(2000);
+            notification = string.Empty;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Unable to save expense. " + ex.Message;
+            notification = string.Empty;
+        }
+    }
+
+    private async Task Cancel()
+    {
+        expense = new()
+        {
+            Id = 0,
+            Category = "",
+            Amount = 0.01m,
+            Date = DateTime.Now,
+            UserId = null
+        };
+        modalTitle = "Add";
+        await LoadExpenses();
+    }
+}

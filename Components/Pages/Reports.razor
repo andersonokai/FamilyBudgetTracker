@@ -1,0 +1,106 @@
+@page "/reports"
+@using System.Globalization
+@using FamilyBudgetTracker.Services
+@using Microsoft.AspNetCore.Authorization
+@using Plotly.Blazor
+@using Plotly.Blazor.Traces
+@inject ExpenseService ExpenseService
+@* Allow demo viewing when unauthenticated — GenerateReport uses a demo-user fallback when not authenticated. *@
+
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="alert alert-info">You're not signed in — demo data will be shown. Sign in to see your own expenses.</div>
+    </NotAuthorized>
+</AuthorizeView>
+
+<h3>Monthly Report</h3>
+
+@if (!string.IsNullOrEmpty(reportError))
+{
+    <div class="alert alert-danger">@reportError</div>
+}
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label>Year</label>
+        <InputSelect class="form-select" @bind-Value="selectedYear">
+            @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 5; year--)
+            {
+                <option value="@year">@year</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col-md-3">
+        <label>Month</label>
+        <InputSelect class="form-select" @bind-Value="selectedMonth">
+            @for (int month = 1; month <= 12; month++)
+            {
+                <option value="@month">@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col-md-3 align-self-end">
+        <button class="btn btn-primary" @onclick="GenerateReport">Generate Report</button>
+    </div>
+</div>
+
+@if (chartData.Any())
+{
+    <PlotlyChart @ref="chart" Data="chartData" Layout="chartLayout" />
+}
+else
+{
+    <p>Select a year and month, then click "Generate Report" to see your spending breakdown. Or add some expenses!</p>
+}
+
+@code {
+    // Reports.razor: Generates a monthly breakdown of expenses per category using Plotly charts.
+    // It calls ExpenseService.GetExpenseReportAsync(year, month) which returns a dictionary of category totals.
+    private int selectedYear = DateTime.Now.Year;
+    private int selectedMonth = DateTime.Now.Month;
+    
+    private PlotlyChart chart = default!;
+    private Layout chartLayout = new();
+    private IList<ITrace> chartData = new List<ITrace>();
+    private string reportError = string.Empty;
+
+    private const string DemoUserId = "demo-user-0001";
+    private async Task GenerateReport()
+    {
+        try
+        {
+            // For demo: always use the demo user
+            var reportData = await ExpenseService.GetExpenseReportForUserAsync(DemoUserId, selectedYear, selectedMonth);
+
+            chartLayout = new Layout();
+            chartLayout.Title = new Plotly.Blazor.LayoutLib.Title
+            {
+                Text = $"Expense Report for {CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(selectedMonth)} {selectedYear}"
+            };
+
+            if (reportData != null && reportData.Any())
+            {
+                var pie = new Pie
+                {
+                    Labels = reportData.Keys.Cast<object>().ToList(),
+                    Values = reportData.Values.Cast<object>().ToList(),
+                    Hole = 0.4m
+                };
+                
+                chartData = new List<ITrace> { pie };
+                reportError = string.Empty;
+            }
+            else
+            {
+                chartData.Clear();
+                reportError = "No expenses found for the selected month.";
+            }
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            reportError = "Error generating report: " + ex.Message;
+        }
+    }
+}

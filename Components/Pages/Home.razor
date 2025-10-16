@@ -1,0 +1,105 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Family Budget Tracker - Home</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container mt-4">
+            <h1>Welcome to Family Budget Tracker</h1>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Track Your Expenses</h5>
+                            <p class="card-text">Record and categorize your daily expenses to better understand your spending habits.</p>
+                            <a href="/expenses" class="btn btn-primary">Manage Expenses</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">View Reports</h5>
+                            <p class="card-text">Analyze your spending patterns with interactive charts and detailed monthly reports.</p>
+                            <a href="/reports" class="btn btn-primary">View Reports</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <h5>Getting Started</h5>
+                <ul class="mb-0">
+                    <li>Add your daily expenses using the Expenses page</li>
+                    <li>Categorize your expenses for better organization</li>
+                    <li>View monthly reports to track your spending patterns</li>
+                    <li>Make informed decisions about your family budget</li>
+                </ul>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="container mt-4">
+            <div class="text-center mb-5">
+                <h1 class="display-4">Welcome to Family Budget Tracker</h1>
+                <p class="lead">Take control of your family finances with our easy-to-use budget tracking solution</p>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-currency-dollar fs-1 text-primary mb-3"></i>
+                            <h5 class="card-title">Track Expenses</h5>
+                            <p class="card-text">Easily record and categorize all your family expenses in one place</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-graph-up fs-1 text-success mb-3"></i>
+                            <h5 class="card-title">Visualize Spending</h5>
+                            <p class="card-text">Get insights with beautiful charts and detailed monthly reports</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-lock fs-1 text-info mb-3"></i>
+                            <h5 class="card-title">Secure & Private</h5>
+                            <p class="card-text">Your financial data is protected with enterprise-grade security</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <p class="lead mb-4">Ready to start managing your family budget?</p>
+                <a href="/Account/Register" class="btn btn-primary btn-lg me-3">Sign Up Now</a>
+                <a href="/Account/Login" class="btn btn-outline-primary btn-lg">Login</a>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-lg-8 offset-lg-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Why Choose Family Budget Tracker?</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Easy to use interface for the whole family</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Detailed categorization of expenses</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Interactive charts and reports</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Secure data storage</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i>Free to use</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
