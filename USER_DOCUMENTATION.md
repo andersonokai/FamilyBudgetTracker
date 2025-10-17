@@ -67,7 +67,7 @@ Notes:
 2. The item will be removed after confirmation.
 
 ### Searching and Filtering
-- Use the category filter or year input at the top of the "Expenses" page to filter results.
+- Use the category filter or year input at the top of the "Expenses" page to filter result
 
 ### Generating Reports
 1. Navigate to the "Reports" page.

@@ -23,7 +23,7 @@ Family Budget Tracker is a .NET Blazor web application designed to help Ghanaian
 ## Getting Started
 1. Clone the repository:
    ```
-   git clone https://github.com/andersonokai/CSE325-Anderson-BlazorProject.git
+   git clone https://github.com/andersonokai/FamilyBudgetTracker.git
    ```
 2. Navigate to the project folder:
    ```
@@ -68,7 +68,7 @@ Family Budget Tracker is a .NET Blazor web application designed to help Ghanaian
 - The app is ready for Azure deployment. See Azure DevOps board for deployment steps.
 
 ## Links
-- [GitHub Repository](https://github.com/andersonokai/CSE325-Anderson-BlazorProject)
+- [GitHub Repository](https://github.com/andersonokai/FamilyBudgetTracker.git)
 - [Trello Board](https://trello.com/b/68cc7133d43f30ad9d62eeb2/anderson-okai-blazor-project)
 - [Azure DevOps Board](https://okai-anderson-devops.visualstudio.com/Family%20Budget%20Tracker/_boards/board/t/Family%20Budget%20Tracker%20Team/Epics)
 

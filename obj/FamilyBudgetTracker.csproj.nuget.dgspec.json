@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj": {}
+    "D:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj": {}
   },
   "projects": {
-    "d:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj": {
+    "D:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj",
+        "projectUniqueName": "D:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj",
         "projectName": "FamilyBudgetTracker",
-        "projectPath": "d:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj",
+        "projectPath": "D:\\FamilyBudgetTracker\\FamilyBudgetTracker.csproj",
         "packagesPath": "C:\\Users\\ander\\.nuget\\packages\\",
-        "outputPath": "d:\\FamilyBudgetTracker\\obj\\",
+        "outputPath": "D:\\FamilyBudgetTracker\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ander\\AppData\\Roaming\\NuGet\\NuGet.Config"

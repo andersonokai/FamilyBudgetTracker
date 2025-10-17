@@ -216,3 +216,4 @@ d:\FamilyBudgetTracker\obj\Debug\net9.0\FamilyBudgetTracker.pdb
 d:\FamilyBudgetTracker\obj\Debug\net9.0\FamilyBudgetTracker.genruntimeconfig.cache
 d:\FamilyBudgetTracker\obj\Debug\net9.0\ref\FamilyBudgetTracker.dll
 d:\FamilyBudgetTracker\bin\Debug\net9.0\Data\app.db
+D:\FamilyBudgetTracker\obj\Debug\net9.0\FamilyBudgetTracker.sourcelink.json
